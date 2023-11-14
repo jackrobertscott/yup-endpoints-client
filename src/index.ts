@@ -29,25 +29,19 @@ export class YupFetcherClient {
     endpoint: YupEndpoint<I, O>
   ) {
     return async (
-      data: yup.InferType<I> | FormData,
+      data: FormData | yup.InferType<I>,
       headers?: Record<string, string>
     ): Promise<O extends yup.Schema ? yup.InferType<O> : Response> => {
-      let fd: FormData
-      if (data instanceof FormData) {
-        fd = data
-      } else {
-        fd = new FormData()
-        if (data) {
-          for (const key in data) {
-            fd.set(key, (data as any)[key])
-          }
-        }
-      }
-      const response = await fetch(this.url + endpoint.path, {
+      const fetchOptions = {
         method: "POST",
-        body: fd,
-        headers,
-      })
+        headers: { ...headers },
+        body: data,
+      } satisfies RequestInit
+      if (!(data instanceof FormData)) {
+        fetchOptions.body = JSON.stringify(data)
+        fetchOptions.headers["Content-Type"] = "application/json"
+      }
+      const response = await fetch(this.url + endpoint.path, fetchOptions)
       const contentType = response.headers.get("Content-Type")
       const isJsonResponse = contentType?.startsWith("application/json")
       if (response.status >= 200 && response.status < 300) {
