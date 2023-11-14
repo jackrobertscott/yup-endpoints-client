@@ -2,7 +2,7 @@
   "name": "yup-endpoints-client",
   "description": "A set of utilities for sending and receiving data from a yup endpoints server.",
   "author": "Jack Scott",
-  "version": "0.4.1",
+  "version": "0.6.0",
   "license": "MIT",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
